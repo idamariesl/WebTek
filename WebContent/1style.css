@@ -1,0 +1,76 @@
+body {
+	background-image:url("http://www.minilim.dk/FoTo_Sider/kroellet-papir-baggrund.jpg");
+}
+
+header div a, header div a:visited  {
+	color: black;
+	text-decoration: none;
+	}
+	
+header div a:hover {
+	color: #a2a2a2;
+}	
+
+nav {
+    font-size: 15px;
+    text-align: center;
+	clear: both;
+	width: 540px;
+	height: 40px;
+	margin-top: 15px; 
+	margin-right:5px;
+	display: block;
+	background-color: black;
+	color: white;
+	text-align: center;
+	list-style-type: none;
+	float:right;
+}
+
+nav li {
+	display: inline-block;
+	margin-top: 12px;
+	font-size: 16px;
+	text-decoration: none;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+nav li a {
+	color: white;
+	text-decoration: none;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+nav li a:hover {
+	background-color: gray;
+	color: white;
+}
+
+
+.content {
+	clear:both;
+}
+h1
+{
+	font-size: 30px;
+	font-family: chalkduster;
+	margin-top: 50px;
+}
+h4
+{
+	font-size: 12px;
+	font-family: avenir;
+	text-align: right;
+}
+h3
+{
+	font-size: 15px;
+	font-family: courant;
+}
+a
+{
+	text-decoration: none;
+}
+
