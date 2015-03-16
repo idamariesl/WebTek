@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My web shop</title>
-    <script type="text/javascript" src="script.js"></script>
+<title>My web shop</title>
+<script type="text/javascript" src="script.js"></script>
 <link rel="stylesheet" type="text/css" href="1style.css">
 
 </head>
 <body>
-		<header>
+	<header>
 		<div
-			style="float: right; width: 100px; margin-right: 5px; margin-top: 5px;">
+			style="float: right; width: 200px; margin-right: 5px; margin-top: 5px;">
 			<a style="float: right;" href="adminLogin.jsf">Admin Login</a>
 		</div>
 
 		<p style="clear: both;">&nbsp;</p>
 
 		<div
-			style="float: right; width: 150px; margin-top: -15px; margin-right: 5px;">
-			<span style="float: right;">&nbsp;Shopping cart: 0</span> <img
+			style="float: right; width: 300px; margin-top: -15px; margin-right: 5px;">
+			<span id="total"style="float: right;">&nbsp;Shopping cart: 0 kr.</span> 
+		
+			
+			<img
 				src="http://simpleicon.com/wp-content/uploads/basket.png"
 				style="width: 25px; height: 25px; float: right; margin-top: -5px"
 				alt="Backet" />
@@ -44,7 +47,7 @@
 		</div>
 
 		<div style="clear: both; top: 125px; width: 100%;">
-			<hr/>
+			<hr />
 		</div>
 
 	</header>
@@ -57,47 +60,45 @@
 
 		</ul>
 	</nav>
-	<div class="content">
-		<div style="margin: 200px auto 0px auto; width:800px;">
+	<div class="content" style="margin: 50px auto 0px auto; width: 800px;">
 		<h2>Products</h2>
+
+		<div>
+			Enter username : <input type="text" id="customerName" /><br/>
+			Enter password : <input type="password"id="customerPass" /><br/>
+			<button id="login-button">Log in</button>&nbsp;&nbsp;
+			<button id="create-account-button">Create account</button> 
+			&nbsp;&nbsp;<span id="login-message-area"></span><br/><br/>
+		</div>
 		
-<div id="login">
-<div>
-   <input type="text" id="customerName"/>
-   <input type="password" id="customerPass"/>
-   <button id="login-button">Log in</button>
-   <button id="create-account-button">Create account</button>
-   </div>
-   <div id="login-message-area"></div>
-   </div>
+		
+		<table id="tabel1" style="border: 1px solid gray">
+			<thead>
+				<tr style="background-color: rgba(0, 0, 0, 0.3)">
+					<td style="width:100px; font-weight:bold;">Name</td>
+					<td style="width:50px; text-align:center; font-weight: bold;">Price</td>
+					<td style="width:400px; font-weight:bold;">Description</td>
+					<td style="width:50px; text-align:center; font-weight: bold;">ID</td>
+					<td style="width:50px; text-align:center; font-weight: bold;">Stock</td>
+					<td style="width:80px; text-align:center; font-weight: bold;">In cart</td>
+					<td style="width:70px"></td>
+				</tr>
+			</thead>
 
-<table id="tabel1" style="border: 1px solid gray">
-    <thead>
-    <tr>
-        <td>Name</td>
-        <td>Price</td>
-        <td>Description</td>
-        <td>Stock</td>
-        <td>In cart</td>
-        <td></td>
-        <td></td>
-        
-    </tr>
-    </thead>
+			<tbody id="itemtablebody">
 
-    <tbody id="itemtablebody">
+			</tbody>
+		</table>
+		<p id="message"></p>
+		<div>
 
-    </tbody>
-</table>
-<p id="total"></p>
-<p id="message"></p>
-        <div>
-            <div><span>Total price for items in cart: </span><span id="cart-total-area"></span></div>
-            <div>
-                <button id="buy-button">Buy items in cart</button>
-            </div>
-        </div>
-        <div id="buy-message-area"></div>
-<input type="button" value="Update table from server!" id="update">
+			<div>
+				<button id="buy-button">Buy items in cart</button>
+			</div>
+		</div>
+		<div id="buy-message-area"></div>
+		<input type="button" value="Refresh the list of items!" id="update">
+	</div>
+
 </body>
 </html>

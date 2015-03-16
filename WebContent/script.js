@@ -1,6 +1,5 @@
-var itemIDArray = [];
-
 var totalPrice = 0;
+var loggedIn = false;
 
 //Run this function when we have loaded the HTML document
 window.onload = function () {
@@ -11,9 +10,6 @@ window.onload = function () {
 		//This code is called when the server has sent its data
 		var items = JSON.parse(itemsText);
 		addItemsToTable(items);
-		addListenerToBuyButton();
-//		document.getElementById("message").innerHTML = "Data loaded";
-
 	});
 
 	//Register an event listener for button clicks
@@ -27,60 +23,84 @@ window.onload = function () {
 		});
 	});
 
+	/**
+	 * On createUser-button, we add a listener that calls 
+	 * the method create in our shopService-class.
+	 */
 	var createUserButton = document.getElementById("create-account-button");
 	addEventListener(createUserButton, "click", function(){
 		var username = document.getElementById("customerName").value;
 		var password = document.getElementById("customerPass").value;
-		var body = "customerName="+ username + "&customerPass=" + password;
-		//rest/shop/create?username="+username+"&password=" + password;	
-		sendRequest("POST", "rest/shop/create", body, function(answer) {
-			document.getElementById("login-message-area").innerHTML=answer;
-		});
-		//something text field
-		alert(body); 	
 
+		if (!(username.length > 0 && password.length > 0)) {
+			document.getElementById("login-message-area").innerHTML = "You must fill in both username and password!";
+		} else {
+			var body = "customerName="+ username + "&customerPass=" + password;
+			sendRequest("POST", "rest/shop/create", body, function(answer) {
+				document.getElementById("login-message-area").innerHTML=answer;
+			});
+
+			document.getElementById("customerName").value = "";
+			document.getElementById("customerPass").value = "";
+
+			loggedIn = true;
+		}
 	});
 
+	/**
+	 * On the login-button we add a button we add a 
+	 * listener that calls the method login in our shopService-class.
+	 */
 	var loginButton = document.getElementById("login-button");
 	addEventListener(loginButton, "click", function(){
 		var username = document.getElementById("customerName").value;
 		var password = document.getElementById("customerPass").value;
-		var body = "customerName=" + username + "&customerPass=" + password;
-		//"rest/shop/login?username="+username+"&password=" + password;	
-		sendRequest("POST", "rest/shop/login", body, function(answer){
-			document.getElementById("login-message-area").innerHTML=answer;
-		});
-		alert(url); 
-	});
-}
 
+		if (!(username.length > 0 && password.length > 0)) {
+			document.getElementById("login-message-area").innerHTML = "You must fill in both username and password!";
+		} else {
+			var body = "customerName=" + username + "&customerPass=" + password;
+			//"rest/shop/login?username="+username+"&password=" + password;	
+			sendRequest("POST", "rest/shop/login", body, function(answer){
+				document.getElementById("login-message-area").innerHTML=answer;
+			});
 
-function addListenerToBuyButton() {	
-	var buyButton = document.getElementById("buy-button");
-	buyButton.addEventListener("click", function () {
-		document.getElementById("message").innerHTML = ""; // test
-		var t = document.getElementById("tabel1");
-		var rows = t.getElementsByTagName("TR");
-		if (totalPrice == 0) {
-			document.getElementById("message").innerHTML = "Your basket is empty!!"; 
+			document.getElementById("customerName").value = "";
+			document.getElementById("customerPass").value = "";
+
+			//document.getElementById("login-message-area").innerHTML = "Welcome " + username;
+			loggedIn = true;
 		}
-		for (var i=0; i<rows.length;i++){
-			var cells = rows[i].getElementsByTagName("TD");
-			if (parseInt(cells[5].innerHTML) > 0) {
-				document.getElementById("message").innerHTML =                          // test
-					document.getElementById("message").innerHTML +                      // test
-					"ID: " + cells[3].innerHTML + " - " + cells[5].innerHTML + " stk<br/>";           // test
+	});
 
-//				Her skal vores request dannes ud fra værdierne i cells[3].innerHTML (ID) og cells[5].innerHTML (inCart)				
+
+	/**
+	 * On the buyButton we add a listener that calls 
+	 * the method create in our buy-class, but only if 
+	 * the user is logged in.
+	 */
+	var buyButton = document.getElementById("buy-button");
+	addEventListener(buyButton,"click", function () {
+		if (loggedIn) {
+
+			document.getElementById("message").innerHTML = ""; // test
+			var t = document.getElementById("tabel1");
+			var rows = t.getElementsByTagName("TR");
+			if (totalPrice == 0) {
+				document.getElementById("message").innerHTML = "Your basket is empty!!"; 
+			}
+			else {
+				sendRequest("POST", "rest/shop/sellItems", null, function(saleResponseText) {			
+					document.getElementById("message").innerHTML = saleResponseText;		
+				});
 			}
 		}
-
-
-//		sendRequest("GET", "rest/shops/buy", null, null);
 	});
 }
 
 function addItemsToTable(items) {
+	totalPrice = 0;
+
 	//Get the table body we we can add items to it
 	var tableBody = document.getElementById("itemtablebody");
 	//Remove all contents of the table body (if any exist)
@@ -97,6 +117,7 @@ function addItemsToTable(items) {
 
 		var priceCell = document.createElement("td");
 		priceCell.textContent = item.price;
+		priceCell.style.textAlign = "right";
 		tr.appendChild(priceCell);
 
 		var descriptionCell = document.createElement("td");
@@ -105,59 +126,60 @@ function addItemsToTable(items) {
 
 		var idCell = document.createElement("td");
 		idCell.textContent = item.id;
+		idCell.style.textAlign = "center";
 		tr.appendChild(idCell);
 
 		var stockCell = document.createElement("td");
 		stockCell.textContent = item.stock;
+		stockCell.style.textAlign = "right";
 		tr.appendChild(stockCell);
 
 		var inCartCell = document.createElement("td");
 		inCartCell.textContent = "0";
+		inCartCell.style.textAlign = "right";
 		tr.appendChild(inCartCell);
 
-/////////////////////////////////
-		
+		/**
+		 * Call the addToCart in shopService
+		 * with the itemID as a formParam
+		 */
 		var addToCartCell = document.createElement("td");
-		var addBtn = document.createElement("BUTTON");        // Create a <button> element
-		var addText = document.createTextNode(" + ");       // Create a text node
-		addBtn.appendChild(addText);                                // Append the text to <button>
-		addToCartCell.appendChild(addBtn); 
-		tr.appendChild(addToCartCell); 
+		var addBtn = document.createElement("BUTTON");        
+		var addText = document.createTextNode(" + ");       
+		addBtn.appendChild(addText);                                
+		addBtn.addEventListener("click", function() {
+			if (loggedIn) {
+				document.getElementById("message").innerHTML = "";
 
-		addBtn.addEventListener("click", function()
-		{
-
-			document.getElementById("message").innerHTML = "";
-
-			var x = document.activeElement.parentElement.parentElement.rowIndex;
-			var t = document.getElementById("tabel1");
-			var rows = t.getElementsByTagName("TR");
-			var cells = rows[x].getElementsByTagName("TD");
-			if (parseInt(cells[4].innerHTML) > 0) {
-				cells[5].innerHTML++;
-				cells[4].innerHTML--;
-
-				totalPrice +=parseInt(cells[1].innerHTML);
-
-				document.getElementById("total").innerHTML = "Total cost: " + totalPrice + " kr.";
-			} else {
-				document.getElementById("message").innerHTML = "Sorry! The item is not on storage at the moment";
+				var x = document.activeElement.parentElement.parentElement.rowIndex;
+				var t = document.getElementById("tabel1");
+				var rows = t.getElementsByTagName("TR");
+				var cells = rows[x].getElementsByTagName("TD");
+				if (parseInt(cells[4].innerHTML) > 0) {
+					cells[5].innerHTML++;
+					cells[4].innerHTML--;
+					totalPrice +=parseInt(cells[1].innerHTML);
+					document.getElementById("total").innerHTML = "&nbsp;Shopping cart: " + totalPrice + " kr.";
+					var body = "itemID=" + cells[3].innerHTML;
+					sendRequest("POST", "rest/shop/addToCart", body, null);
+				} else {
+					alert("Sorry! The item is not on storage at the moment");
+				}
+			} else  {
+				alert("Please login before adding to the shopping cart");
 			}
-
-		});
+				});
 		
-//////////////////////////////////		
-		
+		/**
+		 * Call the subFromCart in shopService
+		 * with the itemID as a formParam
+		 */
 		var subtFromCartCell = document.createElement("td");
-		var subBtn = document.createElement("BUTTON");        // Create a <button> element
-		var subText = document.createTextNode(" - ");       // Create a text node
-		subBtn.appendChild(subText);                                // Append the text to <button>
-		subtFromCartCell.appendChild(subBtn); 
-		tr.appendChild(subtFromCartCell); 
-
+		var subBtn = document.createElement("BUTTON");        
+		var subText = document.createTextNode(" - ");       
+		subBtn.appendChild(subText);                                
 		subBtn.addEventListener("click", function()
-		{
-
+				{
 			document.getElementById("message").innerHTML = "";
 
 			var x = document.activeElement.parentElement.parentElement.rowIndex;
@@ -170,16 +192,17 @@ function addItemsToTable(items) {
 
 				totalPrice -=parseInt(cells[1].innerHTML);
 
-				document.getElementById("total").innerHTML = "Total cost: " + totalPrice + " kr.";
+				document.getElementById("total").innerHTML = "&nbsp;Shopping cart: " + totalPrice + " kr.";
+				var body = "itemID=" + cells[3].innerHTML;
+				sendRequest("POST", "rest/shop/subFromCart", body, null); 
 			}
+				});
 
-		});
+		addToCartCell.appendChild(addBtn); 
+		addToCartCell.appendChild(subBtn); 
+		addToCartCell.style.textAlign = "center";
+		tr.appendChild(addToCartCell); 
 
-		
-		
-//////////////////////////////////
-
-		
 		tableBody.appendChild(tr);
 	}
 }

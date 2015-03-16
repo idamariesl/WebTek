@@ -46,19 +46,13 @@ public class HttpCommunication {
 			con.setRequestMethod("POST");
 			con.setDoOutput(true);
 			con.connect();
-			new XMLOutputter().output(document, System.out);
 			new XMLOutputter().output(document, con.getOutputStream());  // MVO Jeg vil gerne have fat i responsedok
 			responseCode = con.getResponseCode();
-System.out.print("httpPost 0 " + responseCode );
 			InputStream responseStream = con.getInputStream();
 			// If the inputStream is different from 0, there are no bits to build a document on 
 			if(responseStream.available()!=0){
-				System.out.print("httpPost 1 " + responseCode );
 				SAXBuilder builder = new SAXBuilder();
-				System.out.print("httpPost 2 " + responseCode );
 				responseDoc = builder.build(responseStream);
-				System.out.print("httpPost 3 " + responseDoc==null );
-				
 			}
 		} catch (ProtocolException e) {
 			System.out.println("Something went wrong setting the request method ");
@@ -69,7 +63,8 @@ System.out.print("httpPost 0 " + responseCode );
 			System.out.println("Something went wrong connecting to the cloud");
 		}
 		//Close the connection no matter what. 
-		finally{con.disconnect();}
+		finally {
+			con.disconnect();}
 	}
 
 	/**
@@ -80,17 +75,13 @@ System.out.print("httpPost 0 " + responseCode );
 	 * @return Document . The response from the cloud as a Document
 	 */
 	public  void httpGet() {
-		System.out.println("Jeg er her : httpGet 0");
 		HttpURLConnection con = null;
 		try {
 			con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod("GET");
 			con.connect();
-			System.out.println("Jeg er her : httpGet 1");
-
 			responseCode = con.getResponseCode();
 			if (responseCode == TRANS_OK) {
-				System.out.println("Jeg er her : httpGet 2");
 				InputStream responseStream = con.getInputStream();
 				SAXBuilder builder = new SAXBuilder();
 				responseDoc = builder.build(responseStream);  

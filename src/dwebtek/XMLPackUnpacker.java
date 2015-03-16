@@ -33,8 +33,6 @@ public class XMLPackUnpacker {
 
 	public XMLPackUnpacker() {
 		responseCode = 0;
-		//System.out.println("XMLPackUnpacker");
-
 	}
 
 	public int getResponseCode() {
@@ -46,7 +44,7 @@ public class XMLPackUnpacker {
 	 * and add them to an arraylist that is returned.
 	 * @return
 	 */
-	public ArrayList<Product> unpackItemList(){	
+	public ArrayList<Product> unpackItemList() {	
 		// Deletet items
 		CloudTransaction cloudTransAllItems = new CloudTransaction();
 		ArrayList<Element> all = new ArrayList<Element>();
@@ -56,7 +54,6 @@ public class XMLPackUnpacker {
 			List<Element> list = allDoc.getRootElement().getChildren();
 			for(Element n : list){
 				all.add(n);
-				//System.out.println(n.getChild("itemName",NAMESPACE).getValue());
 			}
 		}
 
@@ -69,7 +66,6 @@ public class XMLPackUnpacker {
 			List<Element> list = delDoc.getRootElement().getChildren();
 			for(Element n : list) {
 				del.add(n.getValue());
-				//System.out.println(n.getValue());
 			}
 		}
 
@@ -115,10 +111,8 @@ public class XMLPackUnpacker {
 	public static String makeXmlString(Element element) {
 		//Defining an XMLOutputter for outputting our XML to a string later:
 		XMLOutputter outputter = new XMLOutputter();
-
 		//outputting the content to a string:
 		String xmlString = outputter.outputElementContentString(element);
-
 		return xmlString;
 	}
 
@@ -129,7 +123,7 @@ public class XMLPackUnpacker {
 	 * @param con a Content object that is a child of a w:document-element.
 	 * @return a String containing valid HTML.
 	 */
-	public static String XMLtoHTML(Content con){
+	public static String XMLtoHTML(Content con) {
 		String result = "";
 		if (con.getClass()==Text.class) {
 			return ((Text) con).getText();
@@ -218,16 +212,16 @@ public class XMLPackUnpacker {
 	 * @param customerPass, the password
 	 * @return response document that contains the username and the customerID
 	 */
-	public Document createCustomer(String customerName, String customerPass){
+	public Document createCustomer(String customerName, String customerPass) {
 		CloudTransaction cloudTrans = new CloudTransaction();		
-
 		Element element = new Element("createCustomer"); 
 		element.setNamespace(NAMESPACE); 
 		element.addContent(new Element ("shopKey", NAMESPACE).setText(KEY));
 		element.addContent(new Element ("customerName", NAMESPACE).setText(customerName));
 		element.addContent(new Element ("customerPass", NAMESPACE).setText(customerPass));
-
-		return cloudTrans.createCustomer(new Document(element));
+		Document createDoc = cloudTrans.createCustomer(new Document(element));
+		responseCode = cloudTrans.getResponseCode();
+		return createDoc;
 	}
 	
 	/**
@@ -236,16 +230,38 @@ public class XMLPackUnpacker {
 	 * @param customerPass
 	 * @return the response code
 	 */
-	public int login(String customerName, String customerPass) {
+	public Document login(String customerName, String customerPass) {
 		CloudTransaction cloudTrans = new CloudTransaction();
-		
 		Element element = new Element("login");
 		element.setNamespace(NAMESPACE);
-		//element.addContent(new Element ("shopKey", NAMESPACE).setText(KEY));
 		element.addContent(new Element ("customerName", NAMESPACE).setText(customerName));
 		element.addContent(new Element ("customerPass", NAMESPACE).setText(customerPass));
-		cloudTrans.login(new Document(element));
-		return cloudTrans.getResponseCode();
+		Document loginDoc = cloudTrans.login(new Document(element));
+		responseCode = cloudTrans.getResponseCode();
+		return loginDoc;
+	}
+	
+	/**
+	 * Method for selling items
+	 * @param itemID
+	 * @param customerID
+	 * @param saleAmount
+	 * @return the responseCode from the cloudPost-method
+	 */
+	public Document sellItems(int itemID, int customerID, int saleAmount) {
+		CloudTransaction cloudTrans = new CloudTransaction();
+		String itemIDString = "" + itemID;
+		String customerIDString = "" + customerID;
+		String saleAmountString = "" + saleAmount;
+		Element element = new Element("sellItems"); 
+		element.setNamespace(NAMESPACE); 
+		element.addContent(new Element ("shopKey", NAMESPACE).setText(KEY));
+		element.addContent(new Element ("itemID", NAMESPACE).setText(itemIDString));
+		element.addContent(new Element ("customerID", NAMESPACE).setText(customerIDString));
+		element.addContent(new Element ("saleAmount", NAMESPACE).setText(saleAmountString));
+		cloudTrans.sellItems(new Document(element));
+		responseCode = cloudTrans.getResponseCode();
+		return cloudTrans.getResponseDoc();
 	}
 
 	/**
@@ -256,19 +272,23 @@ public class XMLPackUnpacker {
 	 */
 	public boolean existElement(Document doc, String element) {
 		Element root = doc.getRootElement();
-		if(root.getChild(element)!=null) {
+		if(root.getChild(element, NAMESPACE)!=null) {
 			return true;
 		}
 		else {
 			return false;
 		}
 	}
-	
-//	public String getId(Document doc) {
-//		Element root = doc.getRootElement();
-//		String id = root.getChild("customerID").getValue();
-//		return id;
-//	}
+	/**
+	 * This method takes a document and finds the customerID-element
+	 * @param document
+	 * @return a String for the customerID
+	 */
+	public String getId(Document doc) {
+		Element root = doc.getRootElement();
+		String id = root.getChild("customerID", NAMESPACE).getText();
+		return id;
+	}
 	
 	public int deleteItem(int itemID){
 		CloudTransaction cloudTrans = new CloudTransaction();

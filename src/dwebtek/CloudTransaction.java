@@ -29,28 +29,24 @@ public class CloudTransaction {
 	/**
 	 * Method for listing the deleted items in an ArrayList
 	 */
-	public int  deletedItems(){
+	public int  deletedItems() {
 		String URLString = CLOUD_URL + "listDeletedItemIDs?shopID=" + SHOP_ID;
 		HttpCommunication httpComm = new HttpCommunication(URLString);
 		httpComm.httpGet();
-
 		responseCode = httpComm.getResponseCode();
 		responseDoc = httpComm.getResponseDoc();
-
 		return responseCode;
 	}
 
 	/**
 	 * Method for listing ALL items in an ArrayList
 	 */
-	public int allItems(){
+	public int allItems() {
 		String URLString = CLOUD_URL + "listItems?shopID=" + SHOP_ID;
 		HttpCommunication httpComm = new HttpCommunication(URLString);
 		httpComm.httpGet();
-
 		responseCode = httpComm.getResponseCode();
 		responseDoc = httpComm.getResponseDoc();
-
 		return responseCode;
 	}
 
@@ -58,7 +54,7 @@ public class CloudTransaction {
 	 * This method performs the creatItem POST-request for the given parameter.
 	 * @return responseCode from the cloud
 	 */
-	public int createItem(Document requestDoc){
+	public int createItem(Document requestDoc) {
 		String URLString = CLOUD_URL + "createItem";
 		HttpCommunication httpComm = new HttpCommunication(URLString);
 		httpComm.httpPost(requestDoc);
@@ -69,7 +65,7 @@ public class CloudTransaction {
 	 * This method performs the deleteItem POST-request for the given parameter.
 	 * @return responseCode from cloud
 	 */
-	public  int deleteItem(Document requestDoc){
+	public  int deleteItem(Document requestDoc) {
 		String URLString = CLOUD_URL + "deleteItem";
 		HttpCommunication httpComm = new HttpCommunication(URLString);
 		httpComm.httpPost(requestDoc);
@@ -80,7 +76,7 @@ public class CloudTransaction {
 	 * This method performs the adjustItemStock POST-request for the given parameters
 	 * @return responseCode from cloud
 	 */
-	public int adjustItemStock(Document requestDoc){
+	public int adjustItemStock(Document requestDoc) {
 		String URLString = CLOUD_URL + "adjustItemStock";
 		HttpCommunication httpComm = new HttpCommunication(URLString);
 		httpComm.httpPost(requestDoc);
@@ -91,7 +87,7 @@ public class CloudTransaction {
 	 * This method performs the modifyItem POST-request for the given parameters
 	 * @return responseCode from cloud
 	 */
-	public int modifyItem(Document requestDoc) 	{
+	public int modifyItem(Document requestDoc) {
 		String URLString = CLOUD_URL + "modifyItem";
 		HttpCommunication httpComm = new HttpCommunication(URLString);
 		httpComm.httpPost(requestDoc);
@@ -104,27 +100,41 @@ public class CloudTransaction {
 	 * elements for the createCustomer post. 
 	 * @return a document that contains the username and the customerID
 	 */
-	public Document createCustomer(Document requestDoc){
+	public Document createCustomer(Document requestDoc) {
 		String URLString = CLOUD_URL + "createCustomer";
 		HttpCommunication httpComn = new HttpCommunication(URLString);
 		httpComn.httpPost(requestDoc);
+		responseCode = httpComn.getResponseCode();
 		responseDoc = httpComn.getResponseDoc();
 		return httpComn.getResponseDoc();
 	}
-	
+
 	/**
 	 * Method for logging in. 
 	 * @param requestDoc a document that must contain the expected
 	 * elements for the login post.
 	 * @return  the responsecode from the doPost-method in the HttpCommmunication-class
 	 */
-	public int login(Document requestDoc) {
+	public Document login(Document requestDoc) {
 		String URLString = CLOUD_URL + "login";
 		HttpCommunication httpComn = new HttpCommunication(URLString);
 		httpComn.httpPost(requestDoc);
 		responseCode = httpComn.getResponseCode();
-		return httpComn.getResponseCode();
+		responseDoc = httpComn.getResponseDoc();
+		return httpComn.getResponseDoc();
+	}
+
+	/**
+	 * Method for selling items
+	 * @param requestDoc
+	 * @return a document with the saleResponse
+	 */
+	public Document sellItems(Document requestDoc) {
+		String URLString = CLOUD_URL + "sellItems";
+		HttpCommunication httpComn = new HttpCommunication(URLString);
+		httpComn.httpPost(requestDoc);
+		responseDoc= httpComn.getResponseDoc();
+		responseCode = httpComn.getResponseCode();
+		return httpComn.getResponseDoc();
 	}
 }
-
-
